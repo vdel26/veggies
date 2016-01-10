@@ -1,7 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- */
 'use strict';
 
 const React = require('react-native');
@@ -12,7 +8,6 @@ const {
   Animated,
   AppRegistry,
   Easing,
-  InteractionManager,
   ListView,
   StyleSheet,
   Text,
@@ -20,57 +15,18 @@ const {
   View,
 } = React;
 
+const ListsContainer = require('./js/ListsContainer');
+const Button = require('./js/Button');
+const settings = require('./js/settings');
+
+const mockVeggies = settings.mockVeggies;
+const mockFruits = settings.mockFruits;
+const pages = settings.pages;
+
 const {
   width: deviceWidth,
   height: deviceHeight
 } = Dimensions.get('window');
-
-const mockFruits = [
-  'Apples',
-  'Pears',
-  'Oranges',
-  'Pomelo',
-  'Strawberries',
-  'Kiwi',
-  'Grapes',
-  'Apricot',
-  'Pomelo',
-  'Strawberries',
-  'Kiwi',
-  'Grapes',
-  'Apricot'
-];
-const mockVeggies = [
-  'Celery',
-  'Broccoli',
-  'Cauliflower',
-  'Kale',
-  'Pumpkin',
-  'Squash',
-  'Mushroom',
-  'Carrots',
-  'Pumpkin',
-  'Squash',
-  'Mushroom',
-  'Carrots'
-];
-
-const pages = {
-  VEGGIES: {
-    title: 'Veggies in Season Now',
-    buttonText: 'Fruits',
-    buttonTextColor: 'rgb(43, 116, 101)',
-    titleColor: 'rgb(252, 179, 101)',
-    itemColor: 'rgb(255, 255, 255)'
-  },
-  FRUITS: {
-    title: 'Fruits in Season Now',
-    buttonText: 'Veggies',
-    buttonTextColor: 'rgb(255, 255, 255)',
-    titleColor: 'rgb(19, 38, 29)',
-    itemColor: 'rgb(43, 116, 101)'
-  }
-};
 
 var Veggies = React.createClass({
   getInitialState: function() {
@@ -176,8 +132,8 @@ var Veggies = React.createClass({
           <ListsContainer itemColor={this._itemColor}
                    page={this.state.page}
                    listScale={this.state.listScale}
-                   list1={mockVeggies}
-                   list2={mockFruits} />
+                   list1={settings.mockVeggies}
+                   list2={settings.mockFruits} />
 
           <Button onPressButton={this._onPressButton}
                   itemColor={this._itemColor}
@@ -186,84 +142,6 @@ var Veggies = React.createClass({
 
         </View>
       </LinearGradient>
-    );
-  }
-});
-
-var ListsContainer = React.createClass({
-  getInitialState: function () {
-    return {
-      dataSource: new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-      }),
-      dataSource2: new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-      }),
-    };
-  },
-  componentDidMount: function () {
-    this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(this.props.list1),
-      dataSource2: this.state.dataSource.cloneWithRows(this.props.list2)
-    });
-  },
-  _renderItem: function (item) {
-    return (
-      <View style={styles.item}>
-        <Animated.Text style={[styles.itemText, { color: this.props.itemColor }]}>{ item }</Animated.Text>
-      </View>
-    );
-  },
-  render: function () {
-    var AnimatedListView = Animated.createAnimatedComponent(ListView);
-
-    if (this.props.page === 'veggies') {
-      return (
-        <View style={styles.listContainer}>
-          <AnimatedListView
-            dataSource={this.state.dataSource2}
-            renderRow={this._renderItem}
-            style={[styles.listView, { opacity: 0 } ]}
-          />
-          <AnimatedListView
-            dataSource={this.state.dataSource}
-            renderRow={this._renderItem}
-            style={[styles.listView, { opacity: 1 } ]}
-          />
-        </View>
-      )
-    }
-    else {
-      return (
-        <View style={styles.listContainer}>
-          <AnimatedListView
-            dataSource={this.state.dataSource}
-            renderRow={this._renderItem}
-            style={[styles.listView, { opacity: 0 } ]}
-          />
-          <AnimatedListView
-            dataSource={this.state.dataSource2}
-            renderRow={this._renderItem}
-            style={[styles.listView, { opacity: 1 } ]}
-          />
-        </View>
-      );
-    }
-  }
-});
-
-var Button = React.createClass({
-  render: function () {
-    return (
-      <View style={styles.tabBar}>
-        <TouchableOpacity activeOpacity={0.75} onPress={this.props.onPressButton}>
-          <Animated.View style={[styles.button, { backgroundColor: this.props.itemColor }]}>
-            <Animated.Text style={[ styles.buttonText, { color: this.props.buttonTextColor }]}>
-              { this.props.page === 'veggies' ? pages.VEGGIES.buttonText : pages.FRUITS.buttonText }
-            </Animated.Text>
-          </Animated.View>
-        </TouchableOpacity>
-      </View>
     );
   }
 });
@@ -286,54 +164,6 @@ var styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: 'bold',
     color: '#FCB365'
-  },
-  listContainer: {
-    paddingTop: 16,
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
-  listView: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingTop: 16,
-    paddingBottom: 16
-  },
-  item: {
-    height: 64,
-    paddingLeft: 60
-  },
-  itemText: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#FFF'
-  },
-  tabBar: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    left: 0,
-    height: 64,
-    alignItems: 'center',
-    backgroundColor: 'transparent'
-  },
-  button: {
-    borderRadius: 22,
-    paddingTop: 12,
-    paddingBottom: 12,
-    paddingLeft: 24,
-    paddingRight: 24,
-    backgroundColor: '#FFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
-  },
-  buttonText: {
-    color: '#2B7465',
-    fontSize: 17,
-    fontWeight: 'bold'
   },
   circleBg: {
     position: 'absolute',
