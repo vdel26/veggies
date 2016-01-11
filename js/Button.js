@@ -1,8 +1,9 @@
+'use strict';
+
 const React = require('react-native');
 
 const {
   Animated,
-  ListView,
   StyleSheet,
   Text,
   TouchableOpacity,

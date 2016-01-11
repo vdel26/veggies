@@ -3,6 +3,10 @@
 const React = require('react-native');
 const LinearGradient = require('react-native-linear-gradient');
 const Dimensions = require('Dimensions');
+const Parse = require('parse/react-native');
+const ParseReact = require('parse-react/react-native');
+
+Parse.initialize('qPC9Rp7iB6Nz0ikjvwP8EwUuDtTD4cf5Nk4yGwcB', '5bHa7HWvR2xmtoxvIstnzoLJqBzTDHHICNDRIiaR');
 
 const {
   Animated,
@@ -29,6 +33,8 @@ const {
 } = Dimensions.get('window');
 
 var Veggies = React.createClass({
+  // mixins: [ParseReact.Mixin],
+
   getInitialState: function() {
     return {
       loaded: false,
@@ -39,6 +45,12 @@ var Veggies = React.createClass({
       listScale: new Animated.Value(0)
     };
   },
+
+  // observe: function(props, state) {
+  //   return {
+  //     items: new Parse.Query('Veggies')
+  //   };
+  // },
   componentDidMount: function () {
     this.state.circleScale.setValue(0.5);
     this.state.listScale.setValue(1);
@@ -57,9 +69,31 @@ var Veggies = React.createClass({
         outputRange: [pages.VEGGIES.buttonTextColor, pages.FRUITS.buttonTextColor]
     });
 
+    this._fetchData(this._getCurrentMonth());
+
     this.setState({
       loaded: true
     });
+  },
+  _fetchData: function (month) {
+    var collection = Parse.Object.extend('Veggies');
+    var query = new Parse.Query(collection);
+    query.equalTo('bestMonths', month);
+
+    var onError = (error) => console.log("Error: " + error.code + " " + error.message);
+    var onSuccess = (results) => {
+      var fruitsList = results.filter((item) => item.get('type') === 'fruit');
+      var veggiesList = results.filter((item) => item.get('type') === 'veggie');
+      fruitsList.forEach((item) => console.log(item.get('name')));
+      veggiesList.forEach((item) => console.log(item.get('name')));
+    };
+
+    query.find().then(onSuccess, onError);
+  },
+  _getCurrentMonth: function () {
+    var today = new Date();
+    var month = today.toLocaleString('en-us', { month: 'long' }).toLowerCase();
+    return month;
   },
   _onPressButton: function () {
     this._animateListInOut();
@@ -106,7 +140,6 @@ var Veggies = React.createClass({
     }).start();
   },
   render: function() {
-
     return (
       <LinearGradient colors={['#2B7465', '#3CAA6B']}
                       style={styles.linearGradient}
@@ -130,10 +163,10 @@ var Veggies = React.createClass({
           </View>
 
           <ListsContainer itemColor={this._itemColor}
-                   page={this.state.page}
-                   listScale={this.state.listScale}
-                   list1={settings.mockVeggies}
-                   list2={settings.mockFruits} />
+                          page={this.state.page}
+                          listScale={this.state.listScale}
+                          list1={settings.mockVeggies}
+                          list2={settings.mockFruits} />
 
           <Button onPressButton={this._onPressButton}
                   itemColor={this._itemColor}
