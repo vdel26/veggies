@@ -4,6 +4,7 @@ const React = require('react-native');
 
 const {
   Animated,
+  Easing,
   ListView,
   StyleSheet,
   Text,
@@ -16,16 +17,46 @@ var ListsContainer = React.createClass({
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
       }),
-      dataSource2: new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-      }),
+      scale: new Animated.Value(1)
     };
   },
   componentDidMount: function () {
-    this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(this.props.list1),
-      dataSource2: this.state.dataSource.cloneWithRows(this.props.list2)
+    this.opacity = this.state.scale.interpolate({
+        inputRange: [0.9, 1],
+        outputRange: [0, 1]
     });
+  },
+  componentWillReceiveProps: function(nextProps) {
+    // skip list swapping animation on first load
+    if (this.state.dataSource.getRowCount() > 0) {
+      this._animateListInOut();
+    }
+
+    // delay replacing list data, to allow animation to start
+    setTimeout(() => {
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(nextProps.list1),
+      });
+    }, 50);
+  },
+  _animateListInOut: function() {
+    Animated.sequence([
+      Animated.timing(this.state.scale,
+        {
+          toValue: 0.9,
+          duration: 150,
+          easing: Easing.inOut(Easing.cubic)
+        }
+      ),
+      Animated.timing(this.state.scale,
+        {
+          toValue: 1,
+          duration: 250,
+          easing: Easing.inOut(Easing.cubic),
+          delay: 250
+        }
+      )
+    ]).start();
   },
   _renderItem: function (item) {
     return (
@@ -35,40 +66,15 @@ var ListsContainer = React.createClass({
     );
   },
   render: function () {
-    var AnimatedListView = Animated.createAnimatedComponent(ListView);
-
-    if (this.props.page === 'veggies') {
-      return (
-        <View style={styles.listContainer}>
-          <AnimatedListView
-            dataSource={this.state.dataSource2}
-            renderRow={this._renderItem}
-            style={[styles.listView, { opacity: 0 } ]}
-          />
-          <AnimatedListView
-            dataSource={this.state.dataSource}
-            renderRow={this._renderItem}
-            style={[styles.listView, { opacity: 1 } ]}
-          />
-        </View>
-      )
-    }
-    else {
-      return (
-        <View style={styles.listContainer}>
-          <AnimatedListView
-            dataSource={this.state.dataSource}
-            renderRow={this._renderItem}
-            style={[styles.listView, { opacity: 0 } ]}
-          />
-          <AnimatedListView
-            dataSource={this.state.dataSource2}
-            renderRow={this._renderItem}
-            style={[styles.listView, { opacity: 1 } ]}
-          />
-        </View>
-      );
-    }
+    return (
+      <Animated.View style={[styles.listContainer, { opacity: this.opacity, transform: [{ scale: this.state.scale }] } ]}>
+        <ListView
+          dataSource={this.state.dataSource}
+          renderRow={this._renderItem}
+          style={styles.listView}
+        />
+      </Animated.View>
+    );
   }
 });
 
@@ -76,7 +82,7 @@ var styles = StyleSheet.create({
   listContainer: {
     paddingTop: 16,
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: 'transparent'
   },
   listView: {
     position: 'absolute',

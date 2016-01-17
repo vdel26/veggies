@@ -12,10 +12,8 @@ const {
   Animated,
   AppRegistry,
   Easing,
-  ListView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } = React;
 
@@ -39,7 +37,7 @@ var Veggies = React.createClass({
     return {
       loaded: false,
       page: 'veggies',
-      title: 'Veggies in Season Now',
+      title: pages.VEGGIES.title,
       circleScale: new Animated.Value(0),
       transition: new Animated.Value(0),
       listScale: new Animated.Value(0)
@@ -96,41 +94,28 @@ var Veggies = React.createClass({
     return month;
   },
   _onPressButton: function () {
-    this._animateListInOut();
     if (this.state.page === 'veggies') {
       this._transition();
-      Animated.spring(this.state.circleScale,
+      Animated.timing(this.state.circleScale,
         {
           toValue: 22,
-          friction: 6
+          duration: 400,
+          easing: Easing.inOut(Easing.cubic)
         }
       ).start();
-      this.setState({
-        page: 'fruits',
-      });
+      this.setState({ page: 'fruits' });
     }
     else {
       this._transition(true);
       Animated.timing(this.state.circleScale,
         {
           toValue: 0.5,
-          duration: 400
+          duration: 300,
+          easing: Easing.inOut(Easing.cubic)
         }
       ).start();
-      this.setState({
-        page: 'veggies',
-      });
+      this.setState({ page: 'veggies' });
     }
-  },
-  _animateListInOut: function () {
-    // Animated.sequence([
-    //   Animated.spring(this.state.listScale, {
-    //     toValue: 0.2
-    //   }),
-    //   Animated.spring(this.state.listScale, {
-    //     toValue: 1
-    //   })
-    // ]).start();
   },
   _transition: function (reverse = false) {
     let toValue = reverse ? 0 : 1;
@@ -140,6 +125,7 @@ var Veggies = React.createClass({
     }).start();
   },
   render: function() {
+    var listData = this.state.page === 'veggies' ? settings.mockVeggies : settings.mockFruits;
     return (
       <LinearGradient colors={['#2B7465', '#3CAA6B']}
                       style={styles.linearGradient}
@@ -165,8 +151,7 @@ var Veggies = React.createClass({
           <ListsContainer itemColor={this._itemColor}
                           page={this.state.page}
                           listScale={this.state.listScale}
-                          list1={settings.mockVeggies}
-                          list2={settings.mockFruits} />
+                          list1={listData} />
 
           <Button onPressButton={this._onPressButton}
                   itemColor={this._itemColor}

@@ -16,7 +16,7 @@ var Button = React.createClass({
   render: function () {
     return (
       <View style={styles.tabBar}>
-        <TouchableOpacity activeOpacity={0.75} onPress={this.props.onPressButton}>
+        <TouchableOpacity activeOpacity={0.9} onPress={this.props.onPressButton}>
           <Animated.View style={[styles.button, { backgroundColor: this.props.itemColor }]}>
             <Animated.Text style={[ styles.buttonText, { color: this.props.buttonTextColor }]}>
               { this.props.page === 'veggies' ? pages.VEGGIES.buttonText : pages.FRUITS.buttonText }
