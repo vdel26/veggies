@@ -28,7 +28,7 @@ class Button extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
     bottom: 0,

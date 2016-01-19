@@ -25,19 +25,19 @@ const {
   height: deviceHeight
 } = Dimensions.get('window');
 
-var Veggies = React.createClass({
-
-  getInitialState: function() {
-    return {
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
       loaded: false,
       page: 'veggies',
       title: pages.VEGGIES.title,
       circleScale: new Animated.Value(0),
       transition: new Animated.Value(0)
     };
-  },
+  }
 
-  componentDidMount: function () {
+  componentDidMount() {
     this.state.circleScale.setValue(0.5);
     this.state.transition.setValue(0);
 
@@ -55,19 +55,19 @@ var Veggies = React.createClass({
     });
 
     this._fetchData(this._getCurrentMonth().toLowerCase());
-  },
+  }
 
-  _fetchData: function (month) {
-    var collection = Parse.Object.extend('Veggies');
-    var query = new Parse.Query(collection);
+  _fetchData(month) {
+    const collection = Parse.Object.extend('Veggies');
+    const query = new Parse.Query(collection);
     query.equalTo('bestMonths', month);
 
     // data will not change, so we do not need it as state
     this.data = this.data || {};
 
     // TODO: error state
-    var onError = (error) => console.log("Error: " + error.code + " " + error.message);
-    var onSuccess = (results) => {
+    const onError = (error) => console.log("Error: " + error.code + " " + error.message);
+    const onSuccess = (results) => {
       this.data.fruitsList = results.filter((item) => item.get('type') === 'fruit')
                                     .map((item) => item.get('name'));
       this.data.veggiesList = results.filter((item) => item.get('type') === 'veggie')
@@ -77,20 +77,20 @@ var Veggies = React.createClass({
     };
 
     query.find().then(onSuccess, onError);
-  },
+  }
 
-  _getCurrentMonth: function () {
+  _getCurrentMonth() {
     const MONTHS = [
       'January', 'February', 'March', 'April',
       'May', 'June', 'July', 'August',
       'September', 'October', 'November', 'December'
     ];
 
-    var currentMonth = (new Date()).getMonth();
+    const currentMonth = (new Date()).getMonth();
     return MONTHS[currentMonth];
-  },
+  }
 
-  _onPressButton: function () {
+  _onPressButton() {
     if (this.state.page === 'veggies') {
       this._transition();
       Animated.timing(this.state.circleScale,
@@ -113,18 +113,18 @@ var Veggies = React.createClass({
       ).start();
       this.setState({ page: 'veggies' });
     }
-  },
+  }
 
-  _transition: function (reverse = false) {
+  _transition(reverse = false) {
     let toValue = reverse ? 0 : 1;
     Animated.timing(this.state.transition, {
       duration: 250,
       toValue: toValue
     }).start();
-  },
+  }
 
-  _renderLoading: function() {
-    var title = this._getCurrentMonth();
+  _renderLoading() {
+    const title = this._getCurrentMonth();
 
     return (
       <View style={[styles.loadingContainer]}>
@@ -140,10 +140,10 @@ var Veggies = React.createClass({
         <Spinner style={{ marginTop: 40 }} isVisible={true} size={60} type='Bounce' color='#FFFFFF'/>
       </View>
     );
-  },
+  }
 
-  _renderContent: function() {
-    var listData = this.state.page === 'veggies' ? this.data.veggiesList : this.data.fruitsList;
+  _renderContent() {
+    const listData = this.state.page === 'veggies' ? this.data.veggiesList : this.data.fruitsList;
 
     return (
       <View style={styles.container}>
@@ -167,16 +167,16 @@ var Veggies = React.createClass({
                         page={this.state.page}
                         list1={listData} />
 
-        <Button onPressButton={this._onPressButton}
+        <Button onPressButton={this._onPressButton.bind(this)}
                 itemColor={this._itemColor}
                 buttonTextColor={this._buttonTextColor}
                 page={this.state.page} />
       </View>
     );
-  },
+  }
 
-  render: function() {
-    var content = (() => {
+  render() {
+    const content = (() => {
       return this.state.loaded ? this._renderContent() : this._renderLoading();
     })();
 
@@ -189,9 +189,9 @@ var Veggies = React.createClass({
     );
 
   }
-});
+}
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   linearGradient: {
     flex: 1
   },
@@ -229,4 +229,4 @@ var styles = StyleSheet.create({
   }
 });
 
-AppRegistry.registerComponent('Veggies', () => Veggies);
+AppRegistry.registerComponent('Veggies', () => App);

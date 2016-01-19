@@ -97,7 +97,7 @@ class ListsContainer extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   listContainer: {
     paddingTop: 16,
     flex: 1,
@@ -129,4 +129,4 @@ ListsContainer.propTypes = {
   list1: PropTypes.array.isRequired
 };
 
-exports default ListsContainer;
+export default ListsContainer;
