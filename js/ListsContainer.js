@@ -20,17 +20,31 @@ var ListsContainer = React.createClass({
       scale: new Animated.Value(1)
     };
   },
+
   componentDidMount: function () {
     this.opacity = this.state.scale.interpolate({
         inputRange: [0.9, 1],
         outputRange: [0, 1]
     });
+    this.state.scale.setValue(0.9);
+
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(this.props.list1),
+    });
+
+    Animated.timing(this.state.scale,
+      {
+        toValue: 1,
+        duration: 300,
+        delay: 500,
+        easing: Easing.inOut(Easing.cubic)
+      }
+    ).start();
   },
+
   componentWillReceiveProps: function(nextProps) {
-    // skip list swapping animation on first load
-    if (this.state.dataSource.getRowCount() > 0) {
-      this._animateListInOut();
-    }
+    // animate list swapping
+    this._animateListInOut();
 
     // delay replacing list data, to allow animation to start
     setTimeout(() => {
@@ -39,6 +53,7 @@ var ListsContainer = React.createClass({
       });
     }, 50);
   },
+
   _animateListInOut: function() {
     Animated.sequence([
       Animated.timing(this.state.scale,
@@ -58,6 +73,7 @@ var ListsContainer = React.createClass({
       )
     ]).start();
   },
+
   _renderItem: function (item) {
     return (
       <View style={styles.item}>
@@ -65,6 +81,7 @@ var ListsContainer = React.createClass({
       </View>
     );
   },
+
   render: function () {
     return (
       <Animated.View style={[styles.listContainer, { opacity: this.opacity, transform: [{ scale: this.state.scale }] } ]}>
