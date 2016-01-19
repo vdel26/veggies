@@ -1,6 +1,6 @@
 'use strict';
 
-const React = require('react-native');
+import React from 'react-native';
 
 const {
   Animated,
@@ -8,20 +8,22 @@ const {
   ListView,
   StyleSheet,
   Text,
+  PropTypes,
   View,
 } = React;
 
-var ListsContainer = React.createClass({
-  getInitialState: function () {
-    return {
+class ListsContainer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
       }),
       scale: new Animated.Value(1)
     };
-  },
+  }
 
-  componentDidMount: function () {
+  componentDidMount() {
     this.opacity = this.state.scale.interpolate({
         inputRange: [0.9, 1],
         outputRange: [0, 1]
@@ -40,9 +42,9 @@ var ListsContainer = React.createClass({
         easing: Easing.inOut(Easing.cubic)
       }
     ).start();
-  },
+  }
 
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps(nextProps) {
     // animate list swapping
     this._animateListInOut();
 
@@ -52,9 +54,9 @@ var ListsContainer = React.createClass({
         dataSource: this.state.dataSource.cloneWithRows(nextProps.list1),
       });
     }, 50);
-  },
+  }
 
-  _animateListInOut: function() {
+  _animateListInOut() {
     Animated.sequence([
       Animated.timing(this.state.scale,
         {
@@ -72,28 +74,28 @@ var ListsContainer = React.createClass({
         }
       )
     ]).start();
-  },
+  }
 
-  _renderItem: function (item) {
+  _renderItem(item) {
     return (
       <View style={styles.item}>
         <Animated.Text style={[styles.itemText, { color: this.props.itemColor }]}>{ item }</Animated.Text>
       </View>
     );
-  },
+  }
 
-  render: function () {
+  render() {
     return (
       <Animated.View style={[styles.listContainer, { opacity: this.opacity, transform: [{ scale: this.state.scale }] } ]}>
         <ListView
           dataSource={this.state.dataSource}
-          renderRow={this._renderItem}
+          renderRow={this._renderItem.bind(this)}
           style={styles.listView}
         />
       </Animated.View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   listContainer: {
@@ -121,4 +123,10 @@ var styles = StyleSheet.create({
   }
 });
 
-module.exports = ListsContainer;
+ListsContainer.propTypes = {
+  itemColor: PropTypes.object.isRequired,
+  page: PropTypes.string.isRequired,
+  list1: PropTypes.array.isRequired
+};
+
+exports default ListsContainer;

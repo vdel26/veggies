@@ -1,11 +1,13 @@
 'use strict';
 
-const React = require('react-native');
-const LinearGradient = require('react-native-linear-gradient');
-const Spinner = require('react-native-spinkit');
-const Dimensions = require('Dimensions');
-const Parse = require('parse/react-native');
-const ParseReact = require('parse-react/react-native');
+import React from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Spinner from 'react-native-spinkit';
+import Dimensions from 'Dimensions';
+import Parse from 'parse/react-native';
+import ListsContainer from './js/ListsContainer';
+import Button from './js/Button';
+import { mockVeggies, mockFruits, pages } from './js/constants';
 
 Parse.initialize('qPC9Rp7iB6Nz0ikjvwP8EwUuDtTD4cf5Nk4yGwcB', '5bHa7HWvR2xmtoxvIstnzoLJqBzTDHHICNDRIiaR');
 
@@ -17,14 +19,6 @@ const {
   Text,
   View,
 } = React;
-
-const ListsContainer = require('./js/ListsContainer');
-const Button = require('./js/Button');
-const settings = require('./js/settings');
-
-const mockVeggies = settings.mockVeggies;
-const mockFruits = settings.mockFruits;
-const pages = settings.pages;
 
 const {
   width: deviceWidth,

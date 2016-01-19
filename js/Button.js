@@ -1,19 +1,19 @@
 'use strict';
 
-const React = require('react-native');
+import React from 'react-native';
+import { pages } from './constants';
 
 const {
   Animated,
   StyleSheet,
   Text,
   TouchableOpacity,
+  PropTypes,
   View,
 } = React;
 
-const pages = require('./settings').pages;
-
-var Button = React.createClass({
-  render: function () {
+class Button extends React.Component {
+  render() {
     return (
       <View style={styles.tabBar}>
         <TouchableOpacity activeOpacity={0.9} onPress={this.props.onPressButton}>
@@ -26,7 +26,7 @@ var Button = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   tabBar: {
@@ -56,4 +56,11 @@ var styles = StyleSheet.create({
   }
 });
 
-module.exports = Button;
+Button.propTypes = {
+  onPressButton: PropTypes.func.isRequired,
+  itemColor: PropTypes.object.isRequired,
+  page: PropTypes.string.isRequired,
+  buttonTextColor: PropTypes.object.isRequired
+};
+
+export default Button;
