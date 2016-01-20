@@ -8,7 +8,6 @@
  */
 
 #import "AppDelegate.h"
-
 #import "RCTRootView.h"
 
 @implementation AppDelegate
@@ -49,6 +48,17 @@
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
+  
+//  UIView *loading = [[[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:self options:nil] objectAtIndex:0];
+//  rootView.loadingView = loading;
+//  rootView.loadingViewFadeDelay = 1;
+  
+  UIImageView *launchScreenView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LaunchImage"]];
+  launchScreenView.frame = self.window.bounds;
+  launchScreenView.contentMode = UIViewContentModeScaleAspectFill;
+  rootView.loadingView = launchScreenView;
+  rootView.loadingViewFadeDelay = 2000;
+  
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];

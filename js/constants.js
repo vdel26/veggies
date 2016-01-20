@@ -1,4 +1,4 @@
-exports.mockFruits = [
+export const mockFruits = [
   'Apples',
   'Pears',
   'Oranges',
@@ -14,7 +14,7 @@ exports.mockFruits = [
   'Apricot'
 ];
 
-exports.mockVeggies = [
+export const mockVeggies = [
   'Celery',
   'Broccoli',
   'Cauliflower',
@@ -29,7 +29,7 @@ exports.mockVeggies = [
   'Carrots'
 ];
 
-exports.pages = {
+export const pages = {
   VEGGIES: {
     title: 'Veggies in Season Now',
     buttonText: 'Fruits',

@@ -187,7 +187,6 @@ class App extends React.Component {
         { content }
       </LinearGradient>
     );
-
   }
 }
 
