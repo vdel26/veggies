@@ -31,7 +31,7 @@ class ListsContainer extends React.Component {
     this.state.scale.setValue(0.9);
 
     this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(this.props.list1),
+      dataSource: this.state.dataSource.cloneWithRows(this.props.listData),
     });
 
     Animated.timing(this.state.scale,
@@ -51,9 +51,14 @@ class ListsContainer extends React.Component {
     // delay replacing list data, to allow animation to start
     setTimeout(() => {
       this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(nextProps.list1),
+        dataSource: this.state.dataSource.cloneWithRows(nextProps.listData),
       });
     }, 50);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState.dataSource !== this.state.dataSource) return true;
+    return false;
   }
 
   _animateListInOut() {
@@ -125,8 +130,7 @@ const styles = StyleSheet.create({
 
 ListsContainer.propTypes = {
   itemColor: PropTypes.object.isRequired,
-  page: PropTypes.string.isRequired,
-  list1: PropTypes.array.isRequired
+  listData: PropTypes.array.isRequired
 };
 
 export default ListsContainer;

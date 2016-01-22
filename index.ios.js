@@ -164,8 +164,7 @@ class App extends React.Component {
         </View>
 
         <ListsContainer itemColor={this._itemColor}
-                        page={this.state.page}
-                        list1={listData} />
+                        listData={listData} />
 
         <Button onPressButton={this._onPressButton.bind(this)}
                 itemColor={this._itemColor}
