@@ -53,6 +53,10 @@ class App extends React.Component {
         inputRange: [0, 1],
         outputRange: [pages.VEGGIES.buttonTextColor, pages.FRUITS.buttonTextColor]
     });
+    this._circleOpacity = this.state.circleScale.interpolate({
+      inputRange: [0.5, 22],
+      outputRange: [0.25, 1]
+    });
 
     this._fetchData(this._getCurrentMonth().toLowerCase());
   }
@@ -149,7 +153,10 @@ class App extends React.Component {
       <View style={styles.container}>
         <Animated.View style={[
             styles.circleBg,
-            {transform: [ {scale: this.state.circleScale} ]}
+            {
+              transform: [ {scale: this.state.circleScale} ],
+              opacity: this._circleOpacity
+            }
           ]}>
             <LinearGradient colors={['#CFFFA8', '#EAF2F0']}
                             style={styles.linearGradient}

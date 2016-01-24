@@ -95,6 +95,7 @@ class ListsContainer extends React.Component {
         <ListView
           dataSource={this.state.dataSource}
           renderRow={this._renderItem.bind(this)}
+          initialListSize={1}
           style={styles.listView}
         />
       </Animated.View>
