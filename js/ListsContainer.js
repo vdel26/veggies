@@ -45,40 +45,44 @@ class ListsContainer extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // animate list swapping
-    this._animateListInOut();
-
-    // delay replacing list data, to allow animation to start
-    setTimeout(() => {
+    if (nextProps.page !== this.props.page) {
+      this._animateListOut();
+    }
+    if (nextProps.listData !== this.props.listData) {
+      this._animateListIn();
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(nextProps.listData),
       });
-    }, 50);
+    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+    // only render when data has changed (this.props.listData)
+    // keep this.props.page as a trigger for animations but
+    // do not re render when it changes
     if (nextState.dataSource !== this.state.dataSource) return true;
     return false;
   }
 
-  _animateListInOut() {
-    Animated.sequence([
-      Animated.timing(this.state.scale,
-        {
-          toValue: 0.9,
-          duration: 150,
-          easing: Easing.inOut(Easing.cubic)
-        }
-      ),
-      Animated.timing(this.state.scale,
-        {
-          toValue: 1,
-          duration: 250,
-          easing: Easing.inOut(Easing.cubic),
-          delay: 250
-        }
-      )
-    ]).start();
+  _animateListIn() {
+    Animated.timing(this.state.scale,
+      {
+        toValue: 1,
+        duration: 250,
+        easing: Easing.inOut(Easing.cubic),
+        delay: 250
+      }
+    ).start();
+  }
+
+  _animateListOut() {
+    Animated.timing(this.state.scale,
+      {
+        toValue: 0.9,
+        duration: 150,
+        easing: Easing.inOut(Easing.cubic)
+      }
+    ).start();
   }
 
   _renderItem(item) {
@@ -97,6 +101,8 @@ class ListsContainer extends React.Component {
           renderRow={this._renderItem.bind(this)}
           initialListSize={1}
           style={styles.listView}
+          automaticallyAdjustContentInsets={false}
+          contentInset={{ top: 30, bottom: 60 }}
         />
       </Animated.View>
     );
@@ -105,7 +111,6 @@ class ListsContainer extends React.Component {
 
 const styles = StyleSheet.create({
   listContainer: {
-    paddingTop: 16,
     flex: 1,
     backgroundColor: 'transparent'
   },
@@ -114,9 +119,7 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     left: 0,
-    right: 0,
-    paddingTop: 16,
-    paddingBottom: 16
+    right: 0
   },
   item: {
     height: 64,
@@ -131,7 +134,8 @@ const styles = StyleSheet.create({
 
 ListsContainer.propTypes = {
   itemColor: PropTypes.object.isRequired,
-  listData: PropTypes.array.isRequired
+  listData: PropTypes.array.isRequired,
+  page: PropTypes.string.isRequired
 };
 
 export default ListsContainer;

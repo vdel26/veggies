@@ -15,6 +15,7 @@ const {
   Animated,
   AppRegistry,
   Easing,
+  InteractionManager,
   StyleSheet,
   Text,
   View,
@@ -33,7 +34,8 @@ class App extends React.Component {
       page: 'veggies',
       title: pages.VEGGIES.title,
       circleScale: new Animated.Value(0),
-      transition: new Animated.Value(0)
+      transition: new Animated.Value(0),
+      pageData: []
     };
   }
 
@@ -54,8 +56,9 @@ class App extends React.Component {
         outputRange: [pages.VEGGIES.buttonTextColor, pages.FRUITS.buttonTextColor]
     });
     this._circleOpacity = this.state.circleScale.interpolate({
-      inputRange: [0.5, 22],
-      outputRange: [0.25, 1]
+      inputRange: [0.5, 10],
+      outputRange: [0.1, 1],
+      extrapolate: 'clamp'
     });
 
     this._fetchData(this._getCurrentMonth().toLowerCase());
@@ -77,7 +80,10 @@ class App extends React.Component {
       this.data.veggiesList = results.filter((item) => item.get('type') === 'veggie')
                                      .map((item) => item.get('name'));
 
-      setTimeout(() => this.setState({ loaded: true }), 1000);
+      setTimeout(() => this.setState({
+        loaded: true,
+        pageData: this.data.veggiesList }),
+      1000);
     };
 
     query.find().then(onSuccess, onError);
@@ -105,6 +111,9 @@ class App extends React.Component {
         }
       ).start();
       this.setState({ page: 'fruits' });
+      InteractionManager.runAfterInteractions(() => {
+        this.setState({ pageData: this.data.fruitsList });
+      });
     }
     else {
       this._transition(true);
@@ -116,6 +125,9 @@ class App extends React.Component {
         }
       ).start();
       this.setState({ page: 'veggies' });
+      InteractionManager.runAfterInteractions(() => {
+        this.setState({ pageData: this.data.veggiesList });
+      });
     }
   }
 
@@ -147,7 +159,6 @@ class App extends React.Component {
   }
 
   _renderContent() {
-    const listData = this.state.page === 'veggies' ? this.data.veggiesList : this.data.fruitsList;
 
     return (
       <View style={styles.container}>
@@ -171,7 +182,8 @@ class App extends React.Component {
         </View>
 
         <ListsContainer itemColor={this._itemColor}
-                        listData={listData} />
+                        listData={this.state.pageData}
+                        page={this.state.page} />
 
         <Button onPressButton={this._onPressButton.bind(this)}
                 itemColor={this._itemColor}
