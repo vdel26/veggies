@@ -31,7 +31,7 @@
    */
 
   jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios&dev=true"];
-  // jsCodeLocation = [NSURL URLWithString:@"http://192.168.1.128:8081/index.ios.bundle?platform=ios&dev=true"];
+  // jsCodeLocation = [NSURL URLWithString:@"http://192.168.1.46:8081/index.ios.bundle?platform=ios&dev=true"];
  
   /**
    * OPTION 2
@@ -49,15 +49,9 @@
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   
-//  UIView *loading = [[[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:self options:nil] objectAtIndex:0];
-//  rootView.loadingView = loading;
-//  rootView.loadingViewFadeDelay = 1;
-  
-  UIImageView *launchScreenView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LaunchImage"]];
-  launchScreenView.frame = self.window.bounds;
-  launchScreenView.contentMode = UIViewContentModeScaleAspectFill;
-  rootView.loadingView = launchScreenView;
-  rootView.loadingViewFadeDelay = 2000;
+  UIView *loading = [[[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:self options:nil] objectAtIndex:0];
+  rootView.loadingView = loading;
+  rootView.loadingViewFadeDelay = 1;
   
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
