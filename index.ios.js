@@ -7,7 +7,9 @@ import Dimensions from 'Dimensions';
 import Parse from 'parse/react-native';
 import ListsContainer from './js/ListsContainer';
 import Button from './js/Button';
-import { mockVeggies, mockFruits, pages } from './js/constants';
+import DetailView from './js/DetailView';
+import { pages } from './js/constants';
+import PushFromRightFast from './js/animations';
 
 Parse.initialize('qPC9Rp7iB6Nz0ikjvwP8EwUuDtTD4cf5Nk4yGwcB', '5bHa7HWvR2xmtoxvIstnzoLJqBzTDHHICNDRIiaR');
 
@@ -16,8 +18,10 @@ const {
   AppRegistry,
   Easing,
   InteractionManager,
+  Navigator,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } = React;
 
@@ -26,7 +30,48 @@ const {
   height: deviceHeight
 } = Dimensions.get('window');
 
-class App extends React.Component {
+const getRouteMapper = page => {
+  let color, mainTitle;
+  switch (page) {
+    case 'veggies':
+      color = pages.VEGGIES.titleColor;
+      mainTitle = pages.VEGGIES.title;
+      break;
+    case 'fruits':
+      color = pages.FRUITS.titleColor;
+      mainTitle = pages.FRUITS.title;
+      break;
+  }
+
+  return {
+    LeftButton: function (route, navigator, index, navState) {
+      if (index > 0) {
+        return (
+          <TouchableOpacity style={{ paddingLeft: 10 }} onPress={() => navigator.pop()}>
+            <Text style={[styles.navBarText, styles.title, { color: color }]}>
+              Back
+            </Text>
+          </TouchableOpacity>
+        );
+      }
+    },
+
+    Title: function (route, navigator, index, navState) {
+      const title = index === 0 ? mainTitle : route.item;
+      return (
+        <Text style={[styles.navBarText, styles.title, { color: color }]}>
+          {title}
+        </Text>
+      );
+    },
+
+    RightButton: function (route, navigator, index, navState) {
+      return null;
+    }
+  };
+};
+
+class Main extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,6 +82,10 @@ class App extends React.Component {
       transition: new Animated.Value(0),
       pageData: []
     };
+
+    // pre-bind methods to avoid creating new instances every time
+    this._seeDetail = this._seeDetail.bind(this);
+    this._onPressButton = this._onPressButton.bind(this);
   }
 
   componentDidMount() {
@@ -139,6 +188,13 @@ class App extends React.Component {
     }).start();
   }
 
+  _seeDetail(item) {
+    this.refs.mainNav.push({
+      id: 'detail',
+      item: item
+    });
+  }
+
   _renderLoading() {
     const title = this._getCurrentMonth();
 
@@ -175,17 +231,35 @@ class App extends React.Component {
             </LinearGradient>
         </Animated.View>
 
-        <View style={styles.navBar}>
-          <Animated.Text style={[styles.title, { color: this._titleColor }]}>
-            { this.state.page === 'veggies' ? pages.VEGGIES.title : pages.FRUITS.title }
-          </Animated.Text>
-        </View>
+        <Navigator
+          ref='mainNav'
+          initialRoute={{ id: 'list' }}
+          configureScene={ route => PushFromRightFast }
+          navigationBar={
+            <Navigator.NavigationBar
+              routeMapper={getRouteMapper(this.state.page)}
+              style={styles.navBar}
+            />
+          }
+          renderScene={(route, nav) => {
+            const Component = route.component;
+            switch (route.id) {
+              case 'list':
+                return (
+                  <View style={{ flex: 1, paddingTop: 64 }}>
+                    <ListsContainer itemColor={this._itemColor}
+                                    listData={this.state.pageData}
+                                    page={this.state.page}
+                                    seeDetail={this._seeDetail} />
+                  </View>
+              );
+              case 'detail':
+                return <DetailView item={route.item} page={this.state.page} />
+            }
+          }}
+        />
 
-        <ListsContainer itemColor={this._itemColor}
-                        listData={this.state.pageData}
-                        page={this.state.page} />
-
-        <Button onPressButton={this._onPressButton.bind(this)}
+        <Button onPressButton={this._onPressButton}
                 itemColor={this._itemColor}
                 buttonTextColor={this._buttonTextColor}
                 page={this.state.page} />
@@ -194,9 +268,9 @@ class App extends React.Component {
   }
 
   render() {
-    const content = (() => {
-      return this.state.loaded ? this._renderContent() : this._renderLoading();
-    })();
+    const content = this.state.loaded ?
+                    this._renderContent() :
+                    this._renderLoading();
 
     return (
       <LinearGradient colors={['#2B7465', '#3CAA6B']}
@@ -228,6 +302,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent'
   },
+  navBarText: {
+    marginVertical: 10
+  },
+  navTitle:{
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#FCB365'
+  },
   title: {
     fontSize: 17,
     fontWeight: 'bold',
@@ -246,4 +328,4 @@ const styles = StyleSheet.create({
   }
 });
 
-AppRegistry.registerComponent('Veggies', () => App);
+AppRegistry.registerComponent('Veggies', () => Main);

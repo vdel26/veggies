@@ -8,6 +8,7 @@ const {
   ListView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   PropTypes,
   View,
 } = React;
@@ -21,6 +22,9 @@ class ListsContainer extends React.Component {
       }),
       scale: new Animated.Value(1)
     };
+    // pre-bind methods to avoid creating new instances every time
+    this._renderItem = this._renderItem.bind(this);
+    this._seeDetail = this._seeDetail.bind(this);
   }
 
   componentDidMount() {
@@ -85,11 +89,15 @@ class ListsContainer extends React.Component {
     ).start();
   }
 
+  _seeDetail(item) {
+    this.props.seeDetail(item);
+  }
+
   _renderItem(item) {
     return (
-      <View style={styles.item}>
+      <TouchableOpacity style={styles.item} activeOpacity={0.6} onPress={() => this._seeDetail(item)}>
         <Animated.Text style={[styles.itemText, { color: this.props.itemColor }]}>{ item }</Animated.Text>
-      </View>
+      </TouchableOpacity>
     );
   }
 
@@ -98,7 +106,7 @@ class ListsContainer extends React.Component {
       <Animated.View style={[styles.listContainer, { opacity: this.opacity, transform: [{ scale: this.state.scale }] } ]}>
         <ListView
           dataSource={this.state.dataSource}
-          renderRow={this._renderItem.bind(this)}
+          renderRow={this._renderItem}
           initialListSize={1}
           style={styles.listView}
           automaticallyAdjustContentInsets={false}
