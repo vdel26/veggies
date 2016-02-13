@@ -7,7 +7,6 @@ import PushFromRightFast from './animations';
 import { pages } from './constants';
 
 const {
-  InteractionManager,
   Navigator,
   StyleSheet,
   Text,
@@ -51,9 +50,7 @@ const getRouteMapper = page => {
       );
     },
 
-    RightButton: function (route, navigator, index, navState) {
-      return null;
-    }
+    RightButton: function (route, navigator, index, navState) { return null }
   };
 };
 
@@ -61,6 +58,7 @@ class AppNavigator extends React.Component {
   constructor(props) {
     super(props);
     this._seeDetail = this._seeDetail.bind(this);
+    this._renderScene = this._renderScene.bind(this);
   }
 
   _seeDetail(item) {
@@ -68,6 +66,22 @@ class AppNavigator extends React.Component {
       id: 'detail',
       item: item
     });
+  }
+
+  _renderScene(route, nav) {
+    switch (route.id) {
+      case 'list':
+        return (
+          <View style={{ flex: 1, paddingTop: 64 }}>
+            <ListsContainer itemColor={this.props.itemColor}
+                            listData={this.props.listData}
+                            page={this.props.page}
+                            seeDetail={this._seeDetail} />
+          </View>
+      );
+      case 'detail':
+        return <DetailView item={route.item} page={this.props.page} />
+    }
   }
 
   render() {
@@ -79,26 +93,9 @@ class AppNavigator extends React.Component {
         navigationBar={
           <Navigator.NavigationBar
             routeMapper={getRouteMapper(this.props.page)}
-            style={styles.navBar}
-          />
+            style={styles.navBar} />
         }
-        renderScene={(route, nav) => {
-          const Component = route.component;
-          switch (route.id) {
-            case 'list':
-              return (
-                <View style={{ flex: 1, paddingTop: 64 }}>
-                  <ListsContainer itemColor={this.props.itemColor}
-                                  listData={this.props.listData}
-                                  page={this.props.page}
-                                  seeDetail={this._seeDetail} />
-                </View>
-            );
-            case 'detail':
-              return <DetailView item={route.item} page={this.props.page} />
-          }
-        }}
-      />
+        renderScene={this._renderScene} />
     );
   }
 }
@@ -121,6 +118,9 @@ const styles = StyleSheet.create({
 });
 
 AppNavigator.propTypes = {
+  itemColor: PropTypes.object.isRequired,
+  listData: PropTypes.array.isRequired,
+  page: PropTypes.string.isRequired
 };
 
 export default AppNavigator;
