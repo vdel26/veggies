@@ -5,11 +5,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import Spinner from 'react-native-spinkit';
 import Dimensions from 'Dimensions';
 import Parse from 'parse/react-native';
-import ListsContainer from './js/ListsContainer';
 import Button from './js/Button';
-import DetailView from './js/DetailView';
+import AppNavigator from './js/AppNavigator';
 import { pages } from './js/constants';
-import PushFromRightFast from './js/animations';
 
 Parse.initialize('qPC9Rp7iB6Nz0ikjvwP8EwUuDtTD4cf5Nk4yGwcB', '5bHa7HWvR2xmtoxvIstnzoLJqBzTDHHICNDRIiaR');
 
@@ -30,47 +28,6 @@ const {
   height: deviceHeight
 } = Dimensions.get('window');
 
-const getRouteMapper = page => {
-  let color, mainTitle;
-  switch (page) {
-    case 'veggies':
-      color = pages.VEGGIES.titleColor;
-      mainTitle = pages.VEGGIES.title;
-      break;
-    case 'fruits':
-      color = pages.FRUITS.titleColor;
-      mainTitle = pages.FRUITS.title;
-      break;
-  }
-
-  return {
-    LeftButton: function (route, navigator, index, navState) {
-      if (index > 0) {
-        return (
-          <TouchableOpacity style={{ paddingLeft: 10 }} onPress={() => navigator.pop()}>
-            <Text style={[styles.navBarText, styles.title, { color: color }]}>
-              Back
-            </Text>
-          </TouchableOpacity>
-        );
-      }
-    },
-
-    Title: function (route, navigator, index, navState) {
-      const title = index === 0 ? mainTitle : route.item;
-      return (
-        <Text style={[styles.navBarText, styles.title, { color: color }]}>
-          {title}
-        </Text>
-      );
-    },
-
-    RightButton: function (route, navigator, index, navState) {
-      return null;
-    }
-  };
-};
-
 class Main extends React.Component {
   constructor(props) {
     super(props);
@@ -84,7 +41,6 @@ class Main extends React.Component {
     };
 
     // pre-bind methods to avoid creating new instances every time
-    this._seeDetail = this._seeDetail.bind(this);
     this._onPressButton = this._onPressButton.bind(this);
   }
 
@@ -188,13 +144,6 @@ class Main extends React.Component {
     }).start();
   }
 
-  _seeDetail(item) {
-    this.refs.mainNav.push({
-      id: 'detail',
-      item: item
-    });
-  }
-
   _renderLoading() {
     const title = this._getCurrentMonth();
 
@@ -231,33 +180,9 @@ class Main extends React.Component {
             </LinearGradient>
         </Animated.View>
 
-        <Navigator
-          ref='mainNav'
-          initialRoute={{ id: 'list' }}
-          configureScene={ route => PushFromRightFast }
-          navigationBar={
-            <Navigator.NavigationBar
-              routeMapper={getRouteMapper(this.state.page)}
-              style={styles.navBar}
-            />
-          }
-          renderScene={(route, nav) => {
-            const Component = route.component;
-            switch (route.id) {
-              case 'list':
-                return (
-                  <View style={{ flex: 1, paddingTop: 64 }}>
-                    <ListsContainer itemColor={this._itemColor}
-                                    listData={this.state.pageData}
-                                    page={this.state.page}
-                                    seeDetail={this._seeDetail} />
-                  </View>
-              );
-              case 'detail':
-                return <DetailView item={route.item} page={this.state.page} />
-            }
-          }}
-        />
+        <AppNavigator itemColor={this._itemColor}
+                      listData={this.state.pageData}
+                      page={this.state.page} />
 
         <Button onPressButton={this._onPressButton}
                 itemColor={this._itemColor}
