@@ -5,6 +5,7 @@ import { pages } from './constants';
 
 const {
   Animated,
+  Easing,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -13,11 +14,43 @@ const {
 } = React;
 
 class Button extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      translateY: new Animated.Value(0)
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.hidden === this.props.hidden) return;
+    if (nextProps.hidden) {
+      Animated.timing(this.state.translateY,
+        {
+          toValue: 200,
+          duration: 250,
+          easing: Easing.inOut(Easing.cubic)
+        }
+      ).start();
+    }
+    else {
+      Animated.timing(this.state.translateY,
+        {
+          toValue: 0,
+          duration: 250,
+          easing: Easing.inOut(Easing.cubic)
+        }
+      ).start();
+    }
+  }
+
   render() {
     return (
       <View style={styles.tabBar}>
         <TouchableOpacity activeOpacity={0.9} onPress={this.props.onPressButton}>
-          <Animated.View style={[styles.button, { backgroundColor: this.props.itemColor }]}>
+          <Animated.View style={[styles.button,
+                                { backgroundColor: this.props.itemColor },
+                                { transform: [ { translateY: this.state.translateY }]}
+                               ]}>
             <Animated.Text style={[ styles.buttonText, { color: this.props.buttonTextColor }]}>
               { this.props.page === 'veggies' ? pages.VEGGIES.buttonText : pages.FRUITS.buttonText }
             </Animated.Text>
@@ -60,7 +93,8 @@ Button.propTypes = {
   onPressButton: PropTypes.func.isRequired,
   itemColor: PropTypes.object.isRequired,
   page: PropTypes.string.isRequired,
-  buttonTextColor: PropTypes.object.isRequired
+  buttonTextColor: PropTypes.object.isRequired,
+  hidden: PropTypes.bool.isRequired
 };
 
 export default Button;

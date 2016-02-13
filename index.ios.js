@@ -37,11 +37,14 @@ class Main extends React.Component {
       title: pages.VEGGIES.title,
       circleScale: new Animated.Value(0),
       transition: new Animated.Value(0),
+      hideButton: false,
       pageData: []
     };
 
     // pre-bind methods to avoid creating new instances every time
     this._onPressButton = this._onPressButton.bind(this);
+    this._slideUpButton = this._slideUpButton.bind(this);
+    this._slideDownButton = this._slideDownButton.bind(this);
   }
 
   componentDidMount() {
@@ -62,7 +65,7 @@ class Main extends React.Component {
     });
     this._circleOpacity = this.state.circleScale.interpolate({
       inputRange: [0.5, 10],
-      outputRange: [0.1, 1],
+      outputRange: [0, 1],
       extrapolate: 'clamp'
     });
 
@@ -136,6 +139,14 @@ class Main extends React.Component {
     }
   }
 
+  _slideDownButton() {
+    this.setState({ hideButton: true });
+  }
+
+  _slideUpButton() {
+    this.setState({ hideButton: false });
+  }
+
   _transition(reverse = false) {
     let toValue = reverse ? 0 : 1;
     Animated.timing(this.state.transition, {
@@ -164,7 +175,6 @@ class Main extends React.Component {
   }
 
   _renderContent() {
-
     return (
       <View style={styles.container}>
         <Animated.View style={[
@@ -182,12 +192,15 @@ class Main extends React.Component {
 
         <AppNavigator itemColor={this._itemColor}
                       listData={this.state.pageData}
-                      page={this.state.page} />
+                      page={this.state.page}
+                      onRoutePop={this._slideUpButton}
+                      onRoutePush={this._slideDownButton} />
 
         <Button onPressButton={this._onPressButton}
                 itemColor={this._itemColor}
                 buttonTextColor={this._buttonTextColor}
-                page={this.state.page} />
+                page={this.state.page}
+                hidden={this.state.hideButton} />
       </View>
     );
   }
