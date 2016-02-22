@@ -7,7 +7,7 @@ import Dimensions from 'Dimensions';
 import Parse from 'parse/react-native';
 import Button from './js/Button';
 import AppNavigator from './js/AppNavigator';
-import { pages } from './js/constants';
+import { pages, MONTHS } from './js/constants';
 
 Parse.initialize('qPC9Rp7iB6Nz0ikjvwP8EwUuDtTD4cf5Nk4yGwcB', '5bHa7HWvR2xmtoxvIstnzoLJqBzTDHHICNDRIiaR');
 
@@ -98,12 +98,6 @@ class Main extends React.Component {
   }
 
   _getCurrentMonth() {
-    const MONTHS = [
-      'January', 'February', 'March', 'April',
-      'May', 'June', 'July', 'August',
-      'September', 'October', 'November', 'December'
-    ];
-
     const currentMonth = (new Date()).getMonth();
     return MONTHS[currentMonth];
   }

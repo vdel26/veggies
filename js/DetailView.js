@@ -3,7 +3,8 @@
 import React from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Parse from 'parse/react-native';
-import { pages } from './constants';
+import Calendar from './Calendar';
+import { pages, MONTHS } from './constants';
 
 const {
   InteractionManager,
@@ -18,7 +19,8 @@ class DetailView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      months: []
+      months: [],
+      loaded: false
     };
   }
 
@@ -31,20 +33,28 @@ class DetailView extends React.Component {
     const onError = (error) => console.log("Error: " + error.code + " " + error.message);
     const onSuccess = (object) => {
       InteractionManager.runAfterInteractions(() => {
-        this.setState({ months: object.get('bestMonths') });
+        this.setState({ months: object.get('bestMonths'), loaded: true });
       });
     };
     query.first().then(onSuccess, onError);
+  }
+
+  _bestMonthsCalendar(bestMonths) {
+    const calendar = {};
+    MONTHS.forEach(m => calendar[m] = bestMonths.includes(m.toLowerCase()));
+    return calendar;
   }
 
   render() {
     const titleColor = this.props.page === 'veggies' ?
                        pages.VEGGIES.titleColor :
                        pages.FRUITS.titleColor;
+    const months = this._bestMonthsCalendar(this.state.months);
+
     return (
       <View style={styles.container}>
         <View style={{ flex: 1, paddingTop: 100 }}>
-          <Text>{ this.state.months.join(', ') }</Text>
+          <Calendar months={months} loaded={this.state.loaded} page={this.props.page}/>
         </View>
       </View>
     );

@@ -9,13 +9,13 @@ const BaseConfig = Navigator.SceneConfigs.FloatFromRight;
 // create custom navigator transition
 const PushFromRightFast = Object.assign({}, BaseConfig, {
   springFriction: 25,
-  springTension: 300,
+  springTension: 215,
 });
 
 const FlatFadeToTheLeft = {
   transformTranslate: {
     from: {x: 0, y: 0, z: 0},
-    to: {x: -Math.round(Dimensions.get('window').width * 0.5), y: 0, z: 0},
+    to: {x: -Math.round(Dimensions.get('window').width * 1.5), y: 0, z: 0},
     min: 0,
     max: 1,
     type: 'linear',
@@ -24,7 +24,7 @@ const FlatFadeToTheLeft = {
   },
   opacity: {
     from: 1,
-    to: 0.3,
+    to: 0,
     min: 0,
     max: 1,
     type: 'linear',
