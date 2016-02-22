@@ -207,7 +207,7 @@ class Main extends React.Component {
     return (
       <LinearGradient colors={['#2B7465', '#3CAA6B']}
                       style={styles.linearGradient}
-                      start={[0.0, 0.25]} end={[0.5, 1.0]}>
+                      start={[0.0, 0.0]} end={[1.0, 1.0]}>
         { content }
       </LinearGradient>
     );
