@@ -107,7 +107,7 @@ class Main extends React.Component {
       this._transition();
       Animated.timing(this.state.circleScale,
         {
-          toValue: 22,
+          toValue: 25,
           duration: 400,
           easing: Easing.inOut(Easing.cubic)
         }
